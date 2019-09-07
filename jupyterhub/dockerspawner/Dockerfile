@@ -9,4 +9,4 @@ RUN pip install --no-cache /tmp/dockerspawner
 # install dummyauthenticator
 RUN pip install --no-cache jupyterhub-dummyauthenticator
 # load example configuration
-ADD examples/swarm/jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
+ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
