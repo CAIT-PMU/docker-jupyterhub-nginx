@@ -1,17 +1,35 @@
-jupyter:
-  image: jupyter/datascience-notebook
-  environment:
-    - PASSWORD=${PASSWORD}
+version: "3.6"
+services:
+  proxy:
+    env_file: .env
+    image: jupyterhub/configurable-http-proxy:3.1.1
+    networks:
+      - jupyterhub-net
+    # expose the proxy to the world
+    ports:
+      - "80:8000"
+#    volumes:
+#    - "./hosts:/etc"
+#    - "./secrets:/data"
+    command:
+      - configurable-http-proxy
+      - '--error-target'
+      - 'http://pavement-hub/hub/error'
 
+  pavement-hub:
+    # build an image with SwarmSpawner and our jupyterhub_config.py
+    env_file: .env
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+    image: jhenck57/arc_gis:jupyterhub
+    # mount the docker socket
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - jupyterhub-net
 
-nginx:
-  image: nginx
-  links:
-    - jupyter
-  volumes:
-    - ./nginx.conf:/etc/nginx/nginx.conf
-    - ./letsencrypt.crt:/data/cert.crt
-    - /letsencrypt.key:/data/key.key
-  ports:
-    - 80:80
-    - 443:443
+networks:
+  jupyterhub-net:
+    driver: overlay
+    #driver: bridge

@@ -1,7 +1,7 @@
 version: "3"
 services:
   proxy:
-    env_file: .env
+    env_file: /secrets/oauth.env
     image: jupyterhub/configurable-http-proxy:3.1.1
     networks:
       - jupyterhub-net
@@ -15,7 +15,7 @@ services:
 
   hub:
     # build an image with SwarmSpawner and our jupyterhub_config.py
-    env_file: .env
+    env_file: /secrets/oauth.env
     build:
       context: "./"
       dockerfile: "Dockerfile"
@@ -24,6 +24,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - jupyterhub-net
+
 networks:
   jupyterhub-net:
     driver: overlay
